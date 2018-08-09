@@ -10,6 +10,7 @@ import Spinner from '../../components/UserInterface/Spinner/Spinner';
 import withErrorHandler from '../../higherOrderComponents/withErrorHandler/withErrorHandler';
 import * as burgerBuilderActions from '../../store/actions/index';
 import axios from '../../axios-orders';
+import { initIngredients } from '../../store/actions/burgerBuilder';
 
 
 
@@ -24,6 +25,7 @@ class BurgerBuilder extends Component{
 
     componentDidMount(){
         console.log(this.props);
+        this.props.onInitIngredients();
      
     }
 
@@ -59,7 +61,7 @@ class BurgerBuilder extends Component{
             disabledInfo[key] = disabledInfo[key] <= 0
         }
         let orderSummary = null;
-        let burger = this.state.error ? <p> Ingredients cant be loaded! </p> : <Spinner />;
+        let burger = this.props.error ? <p> Ingredients cant be loaded! </p> : <Spinner />;
 
         if ( this.props.ings){
             burger = (
@@ -96,14 +98,16 @@ class BurgerBuilder extends Component{
 const mapStatetoProps = state => {
     return {
         ings: state.ingredients,
-        price: state.totalPrice
+        price: state.totalPrice,
+        error: state.error
     };
 }
 
 const mapDispatchToProps = dispatch => {
     return {
         onIngredientAdded: (ingName) => dispatch(burgerBuilderActions.addIngredient(ingName)),
-        onIngredientRemove: (ingName) => dispatch(burgerBuilderActions.removeIngredient(ingName))
+        onIngredientRemove: (ingName) => dispatch(burgerBuilderActions.removeIngredient(ingName)),
+        onInitIngredients: () => dispatch(burgerBuilderActions.initIngredients())
     }
 }
 
