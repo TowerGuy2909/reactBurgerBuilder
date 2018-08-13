@@ -8,10 +8,11 @@ export const authorizationStart = () => {
     };
 };
 
-export const authorizationSuccess = (authData) => {
+export const authorizationSuccess = (token, userId) => {
     return {
         type: actionTypes.AUTHORIZATION_SUCCESS,
-        authData: authData
+        idToken: token,
+        userId: userId
     };
 };
 
@@ -37,7 +38,7 @@ export const authorization = (email, password, isSignup) => {
         axios.post(url, authData)
             .then(response => {
                 console.log(response);
-                dispatch(authorizationSuccess(response.data));
+                dispatch(authorizationSuccess(response.data.idToken, response.data.localId));
             })
             .catch(err => {
                 console.log(err);
