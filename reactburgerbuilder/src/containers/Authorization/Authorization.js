@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 
 import Input from '../../components/UserInterface/Input/Input';
 import Button from '../../components/UserInterface/Button/Button';
+import classes from './Authorization.css';
 
 class Authorization extends Component {
     state = {
@@ -36,30 +37,67 @@ class Authorization extends Component {
             },
         } 
     }
+
+    checkValidity(value, rules) {
+        let isValid = true;
+        if (!rules) {
+            return true;
+        }
+
+        if (rules.required){
+            isValid = value.trim() !== '' && isValid;
+        }
+        if (rules.minlLength) {
+            isValid = value.length >= rules.minlLength && isValid
+        }
+        if (rules.maxlLength) {
+            isValid = value.length <= rules.maxlLength && isValid
+        }
+      
+
+        return isValid;
+    }
+
+    inputChangedHandler = (event, controlName) => {
+        const updatedControls = {
+            ...this.state.controls,
+            [controlName]: {
+                ...this.state.controls[controlName],
+                value: event.target.value,
+                valid: this.checkValidity(event.target.values, this.state.controls[controlName].validation),
+                touched: true
+            }
+        };
+        this.setState({controls: updatedControls})
+    }
+
     render(){
         const formElementsArray = [];
-        for (let key in this.state.orderForm){
+        for (let key in this.state.controls){
             formElementsArray.push({
                 id: key,
-                config: this.state.orderForm[key]
+                config: this.state.controls[key]
             });
         }
 
-        const form = formElementsArray.map(formElement => (
+        const form = formElementsArray.map( formElement => (
             <Input 
                 key= {formElement.id}
-                    elementType={formElement.config.elementType}
-                    elementConfig={formElement.config.elementConfig}
-                    value={formElement.config.value} 
-                    invalid={!formElement.config.valid}
-                    shouldValidate={formElement.config.validation}
-                    touched={formElement.config.touched}
-                    changed={(event) => this.inputChangedHandler(event, formElement.id)} /> 
-        ));
+                elementType={formElement.config.elementType}
+                elementConfig={formElement.config.elementConfig}
+                value={formElement.config.value} 
+                invalid={!formElement.config.valid}
+                shouldValidate={formElement.config.validation}
+                touched={formElement.config.touched}
+                changed={(event) => this.inputChangedHandler(event, formElement.id)} /> 
 
+        ) );
+ 
         return(
-            <div>
+            <div className={classes.Authorization}>
                 <form>
+                    {form}
+                    <Button btnType="Success" >SUBMIT</Button>
                 </form>
             </div>
         );
