@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 
 import Input from '../../components/UserInterface/Input/Input';
 import Button from '../../components/UserInterface/Button/Button';
+import Spinner from '../../components/UserInterface/Spinner/Spinner';
 import classes from './Authorization.css';
 import * as actions from '../../store/actions/index';
 
@@ -95,7 +96,7 @@ class Authorization extends Component {
             });
         }
 
-        const form = formElementsArray.map( formElement => (
+        let form = formElementsArray.map( formElement => (
             <Input 
                 key= {formElement.id}
                 elementType={formElement.config.elementType}
@@ -108,8 +109,21 @@ class Authorization extends Component {
 
         ) );
  
+        if (this.props.loading) {
+            form = <Spinner />
+        }
+
+        let errorMessage = null;
+
+        if (this.props.error) {
+            errorMessage = (
+                <p>{this.props.error.message}</p>
+            )
+        }
+
         return(
             <div className={classes.Authorization}>
+                {errorMessage}
                 <form onSubmit={this.submitHandler}>
                     {form}
                     <Button btnType="Success" >SUBMIT</Button>
@@ -122,10 +136,17 @@ class Authorization extends Component {
     }
 }
 
+const mapStateToProps = state => {
+    return {
+        loading: state.authorization.loading,
+        error: state.authorization.error
+    };
+};
+
 const mapDispatchToProps = dispatch => {
     return {
         onAuthorization: (email, password, isSignup) => dispatch(actions.authorization(email, password, isSignup))
-    }
-}
+    };
+};
 
-export default connect(null, mapDispatchToProps)(Authorization);
+export default connect(mapStateToProps, mapDispatchToProps)(Authorization);
