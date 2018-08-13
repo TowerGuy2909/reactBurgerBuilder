@@ -1,8 +1,11 @@
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
 
 import Input from '../../components/UserInterface/Input/Input';
 import Button from '../../components/UserInterface/Button/Button';
 import classes from './Authorization.css';
+import * as actions from '../../store/actions/index';
+
 
 class Authorization extends Component {
     state = {
@@ -16,7 +19,7 @@ class Authorization extends Component {
                 value: '',
                 validation: {
                     required: true,
-                    // isEmail: true
+                   
                 },
                 valid: false,
                 touched: false
@@ -45,7 +48,7 @@ class Authorization extends Component {
         }
 
         if (rules.required){
-            isValid = value.trim() !== '' && isValid;
+            isValid = value !== '' && isValid;
         }
         if (rules.minlLength) {
             isValid = value.length >= rules.minlLength && isValid
@@ -69,6 +72,14 @@ class Authorization extends Component {
             }
         };
         this.setState({controls: updatedControls})
+    }
+
+    submitHandler = (event) => {
+        event.preventDefault();
+        this.props.onAuthorization(this.state.controls.email.value, this.state.controls.password.value);
+        return {
+
+        }
     }
 
     render(){
@@ -95,7 +106,7 @@ class Authorization extends Component {
  
         return(
             <div className={classes.Authorization}>
-                <form>
+                <form onSubmit={this.submitHandler}>
                     {form}
                     <Button btnType="Success" >SUBMIT</Button>
                 </form>
@@ -104,4 +115,10 @@ class Authorization extends Component {
     }
 }
 
-export default Authorization;
+const mapDispatchToProps = dispatch => {
+    return {
+        onAuthorization: (email, password) => dispatch(actions.authorization(email, password))
+    }
+}
+
+export default connect(null, mapDispatchToProps)(Authorization);
