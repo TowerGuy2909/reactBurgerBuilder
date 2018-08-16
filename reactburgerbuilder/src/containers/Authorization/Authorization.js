@@ -7,7 +7,7 @@ import Button from '../../components/UserInterface/Button/Button';
 import Spinner from '../../components/UserInterface/Spinner/Spinner';
 import classes from './Authorization.css';
 import * as actions from '../../store/actions/index';
-import {updateObject} from '../../shared/utility';
+import {updateObject, checkValidity} from '../../shared/utility';
 
 
 class Authorization extends Component {
@@ -51,31 +51,11 @@ class Authorization extends Component {
         }
     }
 
-    checkValidity(value, rules) {
-        let isValid = true;
-        if (!rules) {
-            return true;
-        }
-
-        if (rules.required){
-            isValid = value !== '' && isValid;
-        }
-        if (rules.minlLength) {
-            isValid = value.length >= rules.minlLength && isValid
-        }
-        if (rules.maxlLength) {
-            isValid = value.length <= rules.maxlLength && isValid
-        }
-      
-
-        return isValid;
-    }
-
     inputChangedHandler = (event, controlName) => {
         const updatedControls = updateObject(this.state.controls, {
             [controlName]: updateObject(this.state.controls[controlName], {
                 value: event.target.value,
-                valid: this.checkValidity(event.target.values, this.state.controls[controlName].validation),
+                valid: checkValidity(event.target.values, this.state.controls[controlName].validation),
                 touched: true
             })
         });
