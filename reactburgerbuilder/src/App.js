@@ -1,14 +1,24 @@
 import React, { Component } from 'react';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
 import {connect} from 'react-redux';
+import asyncComponent from './higherOrderComponents/asyncComponent/asyncComponent';
 
 import Layout from './higherOrderComponents/Layout/Layout';
 import BurgerBuilder from './containers/BurgerBuilder/BurgerBuilder';
-import CheckOut from './containers/CheckOut/CheckOut';
-import Orders from './containers/Orders/Orders';
-import Authorization from './containers/Authorization/Authorization';
 import Logout from './containers/Authorization/Logout/Logout';
 import * as actions from './store/actions/index';
+
+const asyncCheckout = asyncComponent(() => {
+  return import('./containers/CheckOut/CheckOut')
+});
+
+const asyncOrders = asyncComponent(() => {
+  return import('./containers/Orders/Orders')
+});
+
+const asyncAuth = asyncComponent(() => {
+  return import('./containers/Authorization/Authorization')
+});
 
 class App extends Component {
   componentDidMount() {
@@ -18,7 +28,7 @@ class App extends Component {
   render() {
     let routes = (
       <Switch>
-        <Route path='/authorization' component={Authorization} />
+        <Route path='/authorization' component={asyncAuth} />
         <Route path='/' exact component={BurgerBuilder} />
         <Redirect to='/' />
       </Switch>
@@ -27,10 +37,10 @@ class App extends Component {
     if (this.props.isAuthenticated) {
       routes = (
         <Switch>
-         <Route path='/checkout' component={CheckOut} />
-          <Route path='/orders' component={Orders} />
+         <Route path='/checkout' component={asyncCheckout} />
+          <Route path='/orders' component={asyncOrders} />
           <Route path='/logout' component={Logout} />
-          <Route path='/authorization' component={Authorization} />
+          <Route path='/authorization' component={asyncAuth} />
           <Route path='/' exact component={BurgerBuilder} />
           <Redirect to='/' />
         </Switch>
