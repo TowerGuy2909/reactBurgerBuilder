@@ -23,14 +23,6 @@ export const authorizationFail = (error) => {
     }
 }
 
-export const checkAuthorizationTimeout = (expirationTime) => {
-    return dispatch => {
-        setTimeout(() => {
-            dispatch(logout());
-        }, expirationTime * 1000);
-    };
-};
-
 export const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('expirationDate');
@@ -39,6 +31,16 @@ export const logout = () => {
         type: actionTypes.AUTHORIZATION_LOGOUT
     }
 }
+
+export const checkAuthorizationTimeout = (expirationTime) => {
+    return dispatch => {
+        setTimeout(() => {
+            dispatch(logout());
+        }, expirationTime * 1000);
+    };
+};
+
+
 
 export const authorization = (email, password, isSignup) => {
     return dispatch => {
@@ -81,7 +83,7 @@ export const authCheckState = () => {
         if (!token) {
             dispatch(logout());
         } else {
-            const expirationDate = localStorage.getItem('expirationDate')
+            const expirationDate = new Date (localStorage.getItem('expirationDate'));
             if (expirationDate > new Date()) {
                 dispatch(logout());
             }else {
